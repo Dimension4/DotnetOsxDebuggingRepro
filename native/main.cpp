@@ -126,10 +126,13 @@ load_assembly_and_get_function_pointer_fn startClr(path const& hostfxrPath, path
     return load_assembly_and_get_function_pointer_fn(loadFunc);
 }
 
-// Entry point
+// Entry point, this function is automatically called by the Ruby runtime
+// when we "require '/this/repo/NativeHost'" (see register.ps1)
+
 extern "C" EXPORTS_API void Init_NativeHost()
 {
 #ifdef WINDOWS
+    // open console window on Windows
     AllocConsole();
     (void) freopen("conout$", "w", stdout);
     (void) freopen("conout$", "w", stderr);
