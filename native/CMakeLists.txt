@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(NativeHost)
+project(DotnetOsxDebuggingRepro)
 
 set(CMAKE_CXX_STANDARD 17)
 add_compile_definitions (_UNICODE UNICODE)

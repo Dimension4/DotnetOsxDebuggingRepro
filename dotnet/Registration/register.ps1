@@ -3,13 +3,14 @@
 $isOsx = $PSVersionTable.Platform -eq "Unix"
 $config = if ($isOsx) { "osx-universal-debug" } else { "win-x64-debug" }
 $entryPoint = Join-Path (Resolve-Path "$PSScriptRoot/../../native") "out/build/$config/NativeHost"
+$entryPoint = $entryPoint.Replace("\", "/")
 
 foreach($ver in 2021, 2022) {
-    $dest = 
+    $dest =
         if ($isOsx) {
             "$($env:HOME)/Library/Application Support/SketchUp $ver/SketchUp/Plugins"
         } else {
-            "$($env:AppData)\SketchUp\SketchUp $ver\SketchUp\Plugins".Replace("\", "/")
+            "$($env:AppData)\SketchUp\SketchUp $ver\SketchUp\Plugins"
         }
 
     if (Test-Path $dest) {

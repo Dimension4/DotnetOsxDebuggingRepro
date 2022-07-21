@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <cassert>
+#include <array>
 
 #if defined(__APPLE__)
 #define OSX
@@ -81,12 +82,12 @@ namespace
     }
 }
 
-path getRepoRoot() 
+path getRepoRoot()
 {
     return getModulePath((void const*)&getRepoRoot).parent_path().parent_path().parent_path().parent_path().parent_path();
 }
 
-path getHostfxr() 
+path getHostfxr()
 {
     auto p = getRepoRoot();
 #if defined(WINDOWS)
@@ -128,12 +129,18 @@ load_assembly_and_get_function_pointer_fn startClr(path const& hostfxrPath, path
 // Entry point
 extern "C" EXPORTS_API void Init_NativeHost()
 {
+#ifdef WINDOWS
+    AllocConsole();
+    (void) freopen("conout$", "w", stdout);
+    (void) freopen("conout$", "w", stderr);
+#endif
+
     auto runtimeConfig = getRepoRoot() / "runtimes/plugin.runtimeconfig.json";
     auto hostfxr = getHostfxr();
     auto assemblyPath = getRepoRoot() / "dotnet/bin/Debug/net6.0/DotnetOsxDebuggingRepro.dll";
     auto loadFunc = startClr(hostfxr, runtimeConfig);
 
-    auto assembly = 
+    auto assembly =
 #ifdef WINDOWS
         assemblyPath.wstring();
 #else
@@ -149,7 +156,7 @@ extern "C" EXPORTS_API void Init_NativeHost()
         UNMANAGEDCALLERSONLY_METHOD,
         nullptr,
         (void**)&entryFunc);
-    
+
     assert(error == 0);
 
     entryFunc();
